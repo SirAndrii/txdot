@@ -1,1 +1,25 @@
-const starbucksLocations = [{"lat": 29.7244, "lon": -95.489, "name": "Starbucks - Uptown", "address": "2600 Post Oak Blvd, Houston, TX 77056"}, {"lat": 29.7469, "lon": -95.389, "name": "Starbucks - Bellaire", "address": "5757 Bellaire Blvd, Houston, TX 77401"}, {"lat": 29.7644, "lon": -95.562, "name": "Starbucks - Midtown", "address": "1200 Main St, Houston, TX 77002"}, {"lat": 29.68, "lon": -95.64, "name": "Starbucks - Museum District", "address": "1515 Hermann Dr, Houston, TX 77004"}, {"lat": 29.738, "lon": -95.452, "name": "Starbucks - Medical Center", "address": "6565 Fannin St, Houston, TX 77030"}, {"lat": 29.71, "lon": -95.53, "name": "Starbucks - Westchase", "address": "2800 Westchase Dr, Houston, TX 77042"}, {"lat": 29.695, "lon": -95.41, "name": "Starbucks - East End", "address": "3500 Main St, Houston, TX 77002"}, {"lat": 29.76, "lon": -95.36, "name": "Starbucks - Highway 288", "address": "8200 W Main St, Pearland, TX 77581"}, {"lat": 29.665, "lon": -95.72, "name": "Starbucks - Fort Bend", "address": "1900 Williams Trace Blvd, Katy, TX 77494"}, {"lat": 29.8, "lon": -95.5, "name": "Starbucks - The Woodlands", "address": "2000 Timberloch Pl, The Woodlands, TX 77380"}];
+const starbucksLocations = [
+  {"lat": 29.7763712, "lon": -95.8326023, "name": "Starbucks - FM 1463", "address": "801 FM 1463, Katy, TX"},
+  {"lat": 29.7838096, "lon": -95.8075223, "name": "Starbucks - Katy Mills", "address": "1998 Katy Mills Blvd, Katy, TX"},
+  {"lat": 29.7768405, "lon": -95.7503329, "name": "Starbucks - Mason Rd", "address": "547 S Mason Rd, Katy, TX"},
+  {"lat": 29.7343622, "lon": -95.7527802, "name": "Starbucks - Westheimer", "address": "22020 Westheimer Pkwy, Katy, TX"},
+  {"lat": 29.7432967, "lon": -95.7759767, "name": "Starbucks - Cinco Ranch", "address": "23501 Cinco Ranch Blvd, Katy, TX"},
+  {"lat": 29.7362283, "lon": -95.7763302, "name": "Starbucks - Target (Westheimer)", "address": "23710 Westheimer Pkwy, Katy, TX"},
+  {"lat": 29.7450035, "lon": -95.7931597, "name": "Starbucks - Westheimer Pkwy", "address": "25015 Westheimer Pkwy, Katy, TX"},
+  {"lat": 29.7591713, "lon": -95.7338978, "name": "Starbucks - Westgreen", "address": "1711 Westgreen Blvd, Katy, TX"},
+  {"lat": 29.7906436, "lon": -95.7205277, "name": "Starbucks - Park Row", "address": "19914 Park Row Dr, Katy, TX"},
+  {"lat": 29.7402992, "lon": -95.8181534, "name": "Starbucks - Seven Meadows", "address": "23010 Seven Meadows Pkwy, Katy, TX"},
+  {"lat": 29.7577490, "lon": -95.7767990, "name": "Starbucks - Grand Pkwy", "address": "1550 N Grand Pkwy, Katy, TX"},
+  {"lat": 29.7604763, "lon": -95.3641051, "name": "Starbucks - Richmond", "address": "Houston, TX"},
+  {"lat": 29.7601541, "lon": -95.3656692, "name": "Starbucks - Richmond East", "address": "Houston, TX"},
+  {"lat": 29.7576377, "lon": -95.3689383, "name": "Starbucks - Chestnut", "address": "Houston, TX"},
+  {"lat": 29.7555794, "lon": -95.3665605, "name": "Starbucks - Chimney Rock", "address": "Houston, TX"},
+  {"lat": 29.7910956, "lon": -95.3867262, "name": "Starbucks - North Richmond", "address": "Houston, TX"},
+  {"lat": 29.776424407959, "lon": -95.4108581542969, "name": "Starbucks - Fountain View", "address": "Houston, TX"},
+  {"lat": 29.7154075, "lon": -95.3971343, "name": "Starbucks - Bellaire South", "address": "Houston, TX"},
+  {"lat": 29.8146095275879, "lon": -95.4107818603516, "name": "Starbucks - Spring North", "address": "Houston, TX"},
+  {"lat": 29.8199622, "lon": -95.4681926, "name": "Starbucks - Spring", "address": "Houston, TX"},
+  {"lat": 29.8214836120605, "lon": -95.5454788208008, "name": "Starbucks - Spring Northwest", "address": "Houston, TX"},
+  {"lat": 29.6276033, "lon": -95.4048109, "name": "Starbucks - South Loop", "address": "Houston, TX"},
+  {"lat": 29.698256, "lon": -95.297539, "name": "Starbucks - East Houston", "address": "Houston, TX"}
+];
