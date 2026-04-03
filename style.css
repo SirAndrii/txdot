@@ -52,6 +52,27 @@ header span {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+/* Starbucks icon (emoji divIcon) */
+.sbux-icon {
+  font-size: 20px;
+  line-height: 28px;
+  text-align: center;
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
+}
+
+.sbux-spinner {
+  font-size: 13px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 .control-panel b {
   display: block;
   margin-bottom: 8px;
@@ -174,6 +195,7 @@ input[type="range"]::-moz-range-thumb {
   vertical-align: middle;
   margin-right: 6px;
 }
+
 .traffic-label {
   font-size: 10px;
   font-weight: bold;
@@ -184,4 +206,34 @@ input[type="range"]::-moz-range-thumb {
   text-align: center;
   pointer-events: none;
   white-space: nowrap;
+}
+
+.traffic-label-popup {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.traffic-label-popup .leaflet-popup-content-wrapper {
+  background: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+.traffic-label-popup .leaflet-popup-content {
+  margin: 0 !important;
+  font-size: 10px;
+  font-weight: bold;
+  color: #333;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 1px 3px !important;
+  border-radius: 2px;
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.traffic-label-popup .leaflet-popup-tip {
+  display: none !important;
 }
