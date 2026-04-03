@@ -183,7 +183,10 @@ export default function StarbucksLayer({ mode, show, onLoadingChange, fetchKey =
       return () => { cancelled = true; clearMarkers(); };
     }
 
-    // ── Queue chunked Overpass fetches ────────────────────────────────────────
+    // Cafes/bakeries are too broad to auto-fetch — use Build map mode instead.
+    if (mode !== 'starbucks') return;
+
+    // ── Queue chunked Overpass fetches (Starbucks only) ───────────────────────
     onLoadingChangeRef.current(true);
 
     const chunks     = gridBboxes(map.getBounds(), GRID[mode]);
@@ -243,27 +246,30 @@ export default function StarbucksLayer({ mode, show, onLoadingChange, fetchKey =
     if (fetchKey === 0 || !show) return;
 
     let cancelled = false;
-    onLoadingChangeRef.current(true);
 
-    const icon       = ICONS[mode];
-    const popupColor = POPUP_COLORS[mode];
+    async function run() {
+      // Yield so StrictMode's cleanup can set cancelled=true before we hit the network.
+      await sleep(1050);
+      if (cancelled) return;
 
-    const b    = map.getBounds();
-    const bbox = [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()]
-      .map(n => n.toFixed(5)).join(',');
-    const query =
-      `[out:json][timeout:60][bbox:${bbox}];` +
-      QUERIES[mode] +
-      `out 400 center tags;`;
+      onLoadingChangeRef.current(true);
 
-    fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'data=' + encodeURIComponent(query),
-    })
-      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json() as Promise<{ elements?: OverpassElement[] }>; })
-      .then(json => {
+      const icon       = ICONS[mode];
+      const popupColor = POPUP_COLORS[mode];
+      const b          = map.getBounds();
+      const bbox       = [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()].map(n => n.toFixed(5)).join(',');
+      const query      = `[out:json][timeout:60][bbox:${bbox}];${QUERIES[mode]}out 400 center tags;`;
+
+      try {
+        const r = await fetch('https://overpass-api.de/api/interpreter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'data=' + encodeURIComponent(query),
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const json = await r.json() as { elements?: OverpassElement[] };
         if (cancelled) return;
+
         const incoming = parseElements(json.elements ?? [], DEFAULT_NAMES[mode]);
         const merged   = mergeToCache(mode, incoming);
         const added    = merged.length - (_sessionData[mode]?.length ?? 0);
@@ -284,13 +290,17 @@ export default function StarbucksLayer({ mode, show, onLoadingChange, fetchKey =
           markersRef.current.push(m);
         });
         onFetchResult?.(added);
-      })
-      .catch(err => {
-        console.error(`[POILayer:${mode}] build-fetch failed:`, err);
-        onFetchResult?.(-1);
-      })
-      .finally(() => { if (!cancelled) onLoadingChangeRef.current(false); });
+      } catch (err) {
+        if (!cancelled) {
+          console.error(`[POILayer:${mode}] build-fetch failed:`, err);
+          onFetchResult?.(-1);
+        }
+      } finally {
+        if (!cancelled) onLoadingChangeRef.current(false);
+      }
+    }
 
+    run();
     return () => { cancelled = true; onLoadingChangeRef.current(false); };
   }, [fetchKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
