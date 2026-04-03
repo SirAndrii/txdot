@@ -65,10 +65,26 @@ function initMap() {
   // Initialize map
   window.map = L.map('map').setView([29.740, -95.620], 11);
   
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  // Tile layers
+  const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 19
-  }).addTo(map);
+  });
+  
+  const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri',
+    maxZoom: 19
+  });
+  
+  // Add OSM as default
+  osmLayer.addTo(map);
+  
+  // Layer control
+  L.control.layers(
+    { 'Map': osmLayer, 'Satellite': satelliteLayer },
+    null,
+    { position: 'topright' }
+  ).addTo(map);
 
   // Setup filter event listeners
   const minSlider = document.getElementById('minSlider');
