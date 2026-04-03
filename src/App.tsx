@@ -16,6 +16,10 @@ export default function App() {
   const [showLabels, setShowLabels] = useState(false);
   const [showStarbucks, setShowStarbucks] = useState(false);
   const [starbucksLoading, setStarbucksLoading] = useState(false);
+  const [showCafes, setShowCafes] = useState(false);
+  const [cafesLoading, setCafesLoading] = useState(false);
+  const [showBakeries, setShowBakeries] = useState(false);
+  const [bakeriesLoading, setBakeriesLoading] = useState(false);
 
   const allStations = dataset === 'embedded' ? embedded : v2;
 
@@ -26,6 +30,14 @@ export default function App() {
 
   const handleStarbucksLoadingChange = useCallback((loading: boolean) => {
     setStarbucksLoading(loading);
+  }, []);
+
+  const handleCafesLoadingChange = useCallback((loading: boolean) => {
+    setCafesLoading(loading);
+  }, []);
+
+  const handleBakeriesLoadingChange = useCallback((loading: boolean) => {
+    setBakeriesLoading(loading);
   }, []);
 
   return (
@@ -50,6 +62,12 @@ export default function App() {
         showStarbucks={showStarbucks}
         onShowStarbucksChange={setShowStarbucks}
         starbucksLoading={starbucksLoading}
+        showCafes={showCafes}
+        onShowCafesChange={setShowCafes}
+        cafesLoading={cafesLoading}
+        showBakeries={showBakeries}
+        onShowBakeriesChange={setShowBakeries}
+        bakeriesLoading={bakeriesLoading}
         markerCount={filteredStations.length}
       />
 
@@ -58,6 +76,10 @@ export default function App() {
         showLabels={showLabels}
         showStarbucks={showStarbucks}
         onStarbucksLoadingChange={handleStarbucksLoadingChange}
+        showCafes={showCafes}
+        onCafesLoadingChange={handleCafesLoadingChange}
+        showBakeries={showBakeries}
+        onBakeriesLoadingChange={handleBakeriesLoadingChange}
       />
     </>
   );

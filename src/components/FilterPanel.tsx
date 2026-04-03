@@ -12,11 +12,47 @@ interface Props {
   showStarbucks: boolean;
   onShowStarbucksChange: (v: boolean) => void;
   starbucksLoading: boolean;
+  showCafes: boolean;
+  onShowCafesChange: (v: boolean) => void;
+  cafesLoading: boolean;
+  showBakeries: boolean;
+  onShowBakeriesChange: (v: boolean) => void;
+  bakeriesLoading: boolean;
   markerCount: number;
 }
 
 function fmt(n: number) {
   return n.toLocaleString();
+}
+
+function POICheckbox({
+  checked,
+  loading,
+  onChange,
+  label,
+  badgeClass,
+}: {
+  checked: boolean;
+  loading: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+  badgeClass: string;
+}) {
+  return (
+    <label>
+      <input
+        type="checkbox"
+        checked={checked}
+        disabled={loading}
+        onChange={e => onChange(e.target.checked)}
+      />
+      {' '}
+      <span className={`poi-badge-inline ${badgeClass}`}>{badgeClass === 'sbux-s-badge' ? 'S' : badgeClass === 'cafe-badge' ? 'C' : 'B'}</span>
+      {' '}
+      {loading ? 'Loading…' : label}
+      {loading && <span className="sbux-spinner"> ⏳</span>}
+    </label>
+  );
 }
 
 export default function FilterPanel({
@@ -31,6 +67,12 @@ export default function FilterPanel({
   showStarbucks,
   onShowStarbucksChange,
   starbucksLoading,
+  showCafes,
+  onShowCafesChange,
+  cafesLoading,
+  showBakeries,
+  onShowBakeriesChange,
+  bakeriesLoading,
   markerCount,
 }: Props) {
   const AADT_MAX = 80000;
@@ -83,16 +125,30 @@ export default function FilterPanel({
         {' '}Show traffic numbers
       </label>
 
-      <label>
-        <input
-          type="checkbox"
-          checked={showStarbucks}
-          disabled={starbucksLoading}
-          onChange={e => onShowStarbucksChange(e.target.checked)}
-        />
-        <span className="sbux-label">{starbucksLoading ? ' Loading…' : ' Show Starbucks'}</span>
-        {starbucksLoading && <span className="sbux-spinner"> ⏳</span>}
-      </label>
+      <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #ddd' }} />
+
+      <b>Points of Interest</b>
+      <POICheckbox
+        checked={showStarbucks}
+        loading={starbucksLoading}
+        onChange={onShowStarbucksChange}
+        label="Starbucks"
+        badgeClass="sbux-s-badge"
+      />
+      <POICheckbox
+        checked={showCafes}
+        loading={cafesLoading}
+        onChange={onShowCafesChange}
+        label="All coffee shops"
+        badgeClass="cafe-badge"
+      />
+      <POICheckbox
+        checked={showBakeries}
+        loading={bakeriesLoading}
+        onChange={onShowBakeriesChange}
+        label="Bakeries &amp; patisseries"
+        badgeClass="bakery-badge"
+      />
 
       <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #ddd' }} />
 

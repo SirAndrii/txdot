@@ -76,8 +76,9 @@ function TrafficLayer({ stations, showLabels }: TrafficLayerProps) {
         const color = getColor(s.aadt);
         const road = s.road === '-' ? 'Unnamed road' : s.road;
         return (
+          // key includes showLabels so Tooltip remounts when permanent changes
           <CircleMarker
-            key={s.station}
+            key={`${s.station}-${showLabels}`}
             center={[s.lat, s.lon]}
             radius={getRadius(s.aadt)}
             pathOptions={{
@@ -126,6 +127,10 @@ interface MapViewProps {
   showLabels: boolean;
   showStarbucks: boolean;
   onStarbucksLoadingChange: (loading: boolean) => void;
+  showCafes: boolean;
+  onCafesLoadingChange: (loading: boolean) => void;
+  showBakeries: boolean;
+  onBakeriesLoadingChange: (loading: boolean) => void;
 }
 
 export default function MapView({
@@ -133,6 +138,10 @@ export default function MapView({
   showLabels,
   showStarbucks,
   onStarbucksLoadingChange,
+  showCafes,
+  onCafesLoadingChange,
+  showBakeries,
+  onBakeriesLoadingChange,
 }: MapViewProps) {
   return (
     <MapContainer
@@ -150,7 +159,9 @@ export default function MapView({
       </LayersControl>
 
       <TrafficLayer stations={stations} showLabels={showLabels} />
-      <StarbucksLayer show={showStarbucks} onLoadingChange={onStarbucksLoadingChange} />
+      <StarbucksLayer mode="starbucks" show={showStarbucks} onLoadingChange={onStarbucksLoadingChange} />
+      <StarbucksLayer mode="cafes" show={showCafes} onLoadingChange={onCafesLoadingChange} />
+      <StarbucksLayer mode="bakeries" show={showBakeries} onLoadingChange={onBakeriesLoadingChange} />
       <LegendControl />
     </MapContainer>
   );

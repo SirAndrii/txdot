@@ -53,17 +53,18 @@ header span {
   display: inline-block;
 }
 
-/* Starbucks marker divIcon wrapper — must clear Leaflet defaults */
+/* POI marker divIcon wrapper — must clear Leaflet defaults */
 .sbux-div-icon {
   background: none !important;
   border: none !important;
 }
 
-/* Green "S" badge inside the divIcon */
-.sbux-s-badge {
+/* Shared badge shape */
+.sbux-s-badge,
+.cafe-badge,
+.bakery-badge {
   width: 24px;
   height: 24px;
-  background: #00704A;
   border-radius: 50%;
   color: #fff;
   font-family: sans-serif;
@@ -73,6 +74,23 @@ header span {
   text-align: center;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
+
+/* Inline badge in the filter panel label */
+.poi-badge-inline {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 16px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.sbux-s-badge  { background: #00704A; }
+.cafe-badge    { background: #795548; }
+.bakery-badge  { background: #E65100; }
 
 @keyframes spin {
   from { transform: rotate(0deg); }
