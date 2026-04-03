@@ -4,10 +4,12 @@ let embeddedStations = [{"lat": 29.825246, "lon": -95.475044, "road": "US0290", 
 let allStations = embeddedStations;
 let markers = [];
 let labels = [];
+let starbucksMarkers = [];
 let minFilter = 0;
 let maxFilter = 350000;
 let currentDataset = 'embedded';
 let showLabels = false;
+let showStarbucks = false;
 
 function getColor(v) {
   if (v > 200000) return '#7B0000';
@@ -91,6 +93,42 @@ function toggleLabels() {
   addMarkers();
 }
 
+function toggleStarbucks() {
+  showStarbucks = !showStarbucks;
+  if (showStarbucks) {
+    addStarbucksMarkers();
+  } else {
+    removeStarbucksMarkers();
+  }
+}
+
+function addStarbucksMarkers() {
+  removeStarbucksMarkers();
+  
+  starbucksLocations.forEach(s => {
+    const marker = L.marker([s.lat, s.lon], {
+      icon: L.icon({
+        iconUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgZmlsbD0iIzAwQzYzNyIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiLz48dGV4dCB4PSIxMiIgeT0iMTUiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5TPC90ZXh0Pjwvc3ZnPg==',
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+        popupAnchor: [0, -14]
+      })
+    }).addTo(map).bindPopup(
+      `<div style="font-family:sans-serif;font-size:12px;min-width:200px;">
+        <strong style="font-size:13px;color:#00C637;">☕ ${s.name}</strong><br>
+        <span style="color:#666;font-size:11px;">${s.address}</span>
+      </div>`,
+      { maxWidth: 250 }
+    );
+    starbucksMarkers.push(marker);
+  });
+}
+
+function removeStarbucksMarkers() {
+  starbucksMarkers.forEach(m => map.removeLayer(m));
+  starbucksMarkers = [];
+}
+
 function switchDataset(dataset) {
   if (dataset === 'embedded') {
     allStations = embeddedStations;
@@ -139,6 +177,12 @@ function initMap() {
   const showLabelsCheckbox = document.getElementById('showLabels');
   showLabelsCheckbox.addEventListener('change', function() {
     toggleLabels();
+  });
+
+  // Setup Starbucks checkbox
+  const showStarbucksCheckbox = document.getElementById('showStarbucks');
+  showStarbucksCheckbox.addEventListener('change', function() {
+    toggleStarbucks();
   });
 
   // Setup filter event listeners
