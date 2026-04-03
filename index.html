@@ -10,14 +10,14 @@
 <body>
 <header>
   <h1>West Houston Traffic — Cinco Ranch / Katy to Uptown (2024 AADT)</h1>
-  <span>359 stations &nbsp;·&nbsp; Harris &amp; Fort Bend Counties &nbsp;·&nbsp; TxDOT data &nbsp;·&nbsp; Hover for details</span>
+  <span>308 stations (≤80,000 AADT) &nbsp;·&nbsp; Harris &amp; Fort Bend Counties &nbsp;·&nbsp; TxDOT data &nbsp;·&nbsp; Hover for details</span>
 </header>
 
 <div id="filter-control" class="control-panel leaflet-control">
   <b>Data Source</b>
   <div class="radio-group">
-    <label><input type="radio" name="dataset" value="embedded" checked> Embedded (563)</label>
-    <label><input type="radio" name="dataset" value="v2"> Full TxDOT (2,591)</label>
+    <label><input type="radio" name="dataset" value="embedded" checked> Embedded (308)</label>
+    <label><input type="radio" name="dataset" value="v2"> Full TxDOT (994)</label>
   </div>
   
   <hr style="margin: 8px 0; border: none; border-top: 1px solid #ddd;">
@@ -30,17 +30,17 @@
   <b>Filter by Traffic (AADT)</b>
   <div class="slider-container">
     <label for="minSlider">Minimum:</label>
-    <input type="range" id="minSlider" min="0" max="350000" step="5000">
+    <input type="range" id="minSlider" min="0" max="80000" step="1000">
     <div class="slider-values">
       <span id="minValue">0</span>
-      <span id="markerCount">563 stations</span>
+      <span id="markerCount">308 stations</span>
     </div>
   </div>
   <div class="slider-container">
     <label for="maxSlider">Maximum:</label>
-    <input type="range" id="maxSlider" min="0" max="350000" step="5000">
+    <input type="range" id="maxSlider" min="0" max="80000" step="1000">
     <div class="slider-values">
-      <span id="maxValue">350,000</span>
+      <span id="maxValue">80,000</span>
     </div>
   </div>
 </div>
