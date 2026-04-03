@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>West Houston Traffic Map — Cinco Ranch to Uptown (2024 AADT)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<header>
+  <h1>West Houston Traffic — Cinco Ranch / Katy to Uptown (2024 AADT)</h1>
+  <span>359 stations &nbsp;·&nbsp; Harris &amp; Fort Bend Counties &nbsp;·&nbsp; TxDOT data &nbsp;·&nbsp; Hover for details</span>
+</header>
+
+<div id="filter-control" class="control-panel leaflet-control">
+  <b>Filter by Traffic (AADT)</b>
+  <div class="slider-container">
+    <label for="minSlider">Minimum:</label>
+    <input type="range" id="minSlider" min="0" max="350000" step="5000">
+    <div class="slider-values">
+      <span id="minValue">0</span>
+      <span id="markerCount">359 stations</span>
+    </div>
+  </div>
+  <div class="slider-container">
+    <label for="maxSlider">Maximum:</label>
+    <input type="range" id="maxSlider" min="0" max="350000" step="5000">
+    <div class="slider-values">
+      <span id="maxValue">350,000</span>
+    </div>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+<script src="./map.js"></script>
+</body>
+</html>
