@@ -3,9 +3,11 @@ let embeddedStations = [{"lat": 29.825246, "lon": -95.475044, "road": "US0290", 
 
 let allStations = embeddedStations;
 let markers = [];
+let labels = [];
 let minFilter = 0;
 let maxFilter = 350000;
 let currentDataset = 'embedded';
+let showLabels = false;
 
 function getColor(v) {
   if (v > 200000) return '#7B0000';
@@ -31,6 +33,10 @@ function addMarkers() {
   // Clear existing markers
   markers.forEach(m => map.removeLayer(m));
   markers = [];
+  
+  // Clear existing labels
+  labels.forEach(l => map.removeLayer(l));
+  labels = [];
 
   // Add filtered markers
   allStations.forEach(s => {
@@ -53,6 +59,21 @@ function addMarkers() {
         { sticky: true, opacity: 0.97 }
       );
       markers.push(marker);
+      
+      // Create label if enabled
+      if (showLabels) {
+        const label = L.tooltip({
+          permanent: true,
+          direction: 'bottom',
+          offset: [0, 15],
+          className: 'traffic-label',
+          opacity: 1
+        })
+          .setContent(s.aadt.toLocaleString())
+          .setLatLng([s.lat, s.lon])
+          .addTo(map);
+        labels.push(label);
+      }
     }
   });
 
@@ -62,6 +83,11 @@ function addMarkers() {
 }
 
 function updateFilter() {
+  addMarkers();
+}
+
+function toggleLabels() {
+  showLabels = !showLabels;
   addMarkers();
 }
 
@@ -107,6 +133,12 @@ function initMap() {
       currentDataset = this.value;
       switchDataset(this.value);
     });
+  });
+
+  // Setup labels checkbox
+  const showLabelsCheckbox = document.getElementById('showLabels');
+  showLabelsCheckbox.addEventListener('change', function() {
+    toggleLabels();
   });
 
   // Setup filter event listeners
