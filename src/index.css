@@ -92,6 +92,21 @@ header span {
 .cafe-badge    { background: #795548; }
 .bakery-badge  { background: #E65100; }
 
+.fetch-btn {
+  display: block;
+  width: 100%;
+  margin: 2px 0 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  border: 1px solid #00704A;
+  border-radius: 4px;
+  background: #fff;
+  color: #00704A;
+  cursor: pointer;
+  text-align: left;
+}
+.fetch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 @keyframes spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }

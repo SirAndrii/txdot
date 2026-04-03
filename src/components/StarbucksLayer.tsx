@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import type { StarbucksLocation } from '../types';
-import { loadFromCache, saveToCache, type CafeMode } from '../utils/starbucksCache';
+import { loadFromCache, saveToCache, mergeToCache, type CafeMode } from '../utils/starbucksCache';
 
 // ── Global Overpass request queue ─────────────────────────────────────────────
 // Shared across all StarbucksLayer instances so starbucks + cafes + bakeries
@@ -124,9 +124,12 @@ interface Props {
   mode: CafeMode;
   show: boolean;
   onLoadingChange: (loading: boolean) => void;
+  /** Increment to trigger a manual fetch of the current viewport (build map mode). */
+  fetchKey?: number;
+  onFetchResult?: (added: number) => void;
 }
 
-export default function StarbucksLayer({ mode, show, onLoadingChange }: Props) {
+export default function StarbucksLayer({ mode, show, onLoadingChange, fetchKey = 0, onFetchResult }: Props) {
   const map = useMap();
   const markersRef = useRef<L.Marker[]>([]);
 
@@ -234,6 +237,62 @@ export default function StarbucksLayer({ mode, show, onLoadingChange }: Props) {
       onLoadingChangeRef.current(false);
     };
   }, [show, mode, map]);
+
+  // ── Build map mode: user-triggered fetch for the current viewport ─────────
+  useEffect(() => {
+    if (fetchKey === 0 || !show) return;
+
+    let cancelled = false;
+    onLoadingChangeRef.current(true);
+
+    const icon       = ICONS[mode];
+    const popupColor = POPUP_COLORS[mode];
+
+    const b    = map.getBounds();
+    const bbox = [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()]
+      .map(n => n.toFixed(5)).join(',');
+    const query =
+      `[out:json][timeout:60][bbox:${bbox}];` +
+      QUERIES[mode] +
+      `out 400 center tags;`;
+
+    fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'data=' + encodeURIComponent(query),
+    })
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json() as Promise<{ elements?: OverpassElement[] }>; })
+      .then(json => {
+        if (cancelled) return;
+        const incoming = parseElements(json.elements ?? [], DEFAULT_NAMES[mode]);
+        const merged   = mergeToCache(mode, incoming);
+        const added    = merged.length - (_sessionData[mode]?.length ?? 0);
+        _sessionData[mode] = merged;
+
+        markersRef.current.forEach(m => m.remove());
+        markersRef.current = [];
+        merged.forEach((s: StarbucksLocation) => {
+          const m = L.marker([s.lat, s.lon], { icon })
+            .addTo(map)
+            .bindPopup(
+              `<div style="font-family:sans-serif;font-size:12px;min-width:180px;">
+                <strong style="font-size:13px;color:${popupColor};">${s.name}</strong><br/>
+                <span style="color:#666;font-size:11px;">${s.address}</span>
+              </div>`,
+              { maxWidth: 260 },
+            );
+          markersRef.current.push(m);
+        });
+        onFetchResult?.(added);
+      })
+      .catch(err => {
+        console.error(`[POILayer:${mode}] build-fetch failed:`, err);
+        onFetchResult?.(-1);
+      })
+      .finally(() => { if (!cancelled) onLoadingChangeRef.current(false); });
+
+    return () => { cancelled = true; onLoadingChangeRef.current(false); };
+  }, [fetchKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return null;
 }

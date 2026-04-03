@@ -131,6 +131,8 @@ interface MapViewProps {
   onCafesLoadingChange: (loading: boolean) => void;
   showBakeries: boolean;
   onBakeriesLoadingChange: (loading: boolean) => void;
+  fetchKeys: Record<string, number>;
+  onFetchResult: (mode: string, added: number) => void;
 }
 
 export default function MapView({
@@ -142,6 +144,8 @@ export default function MapView({
   onCafesLoadingChange,
   showBakeries,
   onBakeriesLoadingChange,
+  fetchKeys,
+  onFetchResult,
 }: MapViewProps) {
   return (
     <MapContainer
@@ -159,9 +163,9 @@ export default function MapView({
       </LayersControl>
 
       <TrafficLayer stations={stations} showLabels={showLabels} />
-      <StarbucksLayer mode="starbucks" show={showStarbucks} onLoadingChange={onStarbucksLoadingChange} />
-      <StarbucksLayer mode="cafes" show={showCafes} onLoadingChange={onCafesLoadingChange} />
-      <StarbucksLayer mode="bakeries" show={showBakeries} onLoadingChange={onBakeriesLoadingChange} />
+      <StarbucksLayer mode="starbucks" show={showStarbucks} onLoadingChange={onStarbucksLoadingChange} fetchKey={fetchKeys.starbucks} onFetchResult={n => onFetchResult('starbucks', n)} />
+      <StarbucksLayer mode="cafes"     show={showCafes}     onLoadingChange={onCafesLoadingChange}    fetchKey={fetchKeys.cafes}     onFetchResult={n => onFetchResult('cafes', n)} />
+      <StarbucksLayer mode="bakeries"  show={showBakeries}  onLoadingChange={onBakeriesLoadingChange} fetchKey={fetchKeys.bakeries}  onFetchResult={n => onFetchResult('bakeries', n)} />
       <LegendControl />
     </MapContainer>
   );

@@ -30,3 +30,13 @@ export function saveToCache(mode: CafeMode, data: StarbucksLocation[]): void {
     console.warn('[POILayer] localStorage save failed:', e);
   }
 }
+
+/** Merge incoming locations into the existing cache (dedup by ~11m grid). Returns full merged array. */
+export function mergeToCache(mode: CafeMode, incoming: StarbucksLocation[]): StarbucksLocation[] {
+  const existing = loadFromCache(mode) ?? [];
+  const key = (s: StarbucksLocation) => `${s.lat.toFixed(4)},${s.lon.toFixed(4)}`;
+  const seen = new Set(existing.map(key));
+  const merged = [...existing, ...incoming.filter(s => !seen.has(key(s)))];
+  saveToCache(mode, merged);
+  return merged;
+}

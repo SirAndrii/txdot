@@ -1,5 +1,7 @@
 import type { Dataset } from '../types';
 
+type CafeMode = 'starbucks' | 'cafes' | 'bakeries';
+
 interface Props {
   dataset: Dataset;
   onDatasetChange: (d: Dataset) => void;
@@ -18,6 +20,10 @@ interface Props {
   showBakeries: boolean;
   onShowBakeriesChange: (v: boolean) => void;
   bakeriesLoading: boolean;
+  buildMode: boolean;
+  onBuildModeChange: (v: boolean) => void;
+  onFetchArea: (mode: CafeMode) => void;
+  fetchStatus: Record<CafeMode, number | null>;
   markerCount: number;
 }
 
@@ -55,6 +61,13 @@ function POICheckbox({
   );
 }
 
+function statusLabel(status: number | null) {
+  if (status === null) return '';
+  if (status === -1)   return ' ⚠ failed';
+  if (status === 0)    return ' ✓ no new';
+  return ` +${status} new`;
+}
+
 export default function FilterPanel({
   dataset,
   onDatasetChange,
@@ -73,6 +86,10 @@ export default function FilterPanel({
   showBakeries,
   onShowBakeriesChange,
   bakeriesLoading,
+  buildMode,
+  onBuildModeChange,
+  onFetchArea,
+  fetchStatus,
   markerCount,
 }: Props) {
   const AADT_MAX = 80000;
@@ -127,28 +144,35 @@ export default function FilterPanel({
 
       <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #ddd' }} />
 
-      <b>Points of Interest</b>
-      <POICheckbox
-        checked={showStarbucks}
-        loading={starbucksLoading}
-        onChange={onShowStarbucksChange}
-        label="Starbucks"
-        badgeClass="sbux-s-badge"
-      />
-      <POICheckbox
-        checked={showCafes}
-        loading={cafesLoading}
-        onChange={onShowCafesChange}
-        label="All coffee shops"
-        badgeClass="cafe-badge"
-      />
-      <POICheckbox
-        checked={showBakeries}
-        loading={bakeriesLoading}
-        onChange={onShowBakeriesChange}
-        label="Bakeries &amp; patisseries"
-        badgeClass="bakery-badge"
-      />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+        <b style={{ marginBottom: 0 }}>Points of Interest</b>
+        <button
+          onClick={() => onBuildModeChange(!buildMode)}
+          style={{
+            fontSize: 11, padding: '2px 7px', borderRadius: 4, cursor: 'pointer',
+            border: buildMode ? '1px solid #00704A' : '1px solid #bbb',
+            background: buildMode ? '#e8f5e9' : '#f5f5f5',
+            color: buildMode ? '#00704A' : '#333', fontWeight: buildMode ? 600 : 400,
+          }}
+        >
+          {buildMode ? '🗺 Building…' : '🗺 Build map'}
+        </button>
+      </div>
+
+      {buildMode && (
+        <p style={{ fontSize: 11, color: '#888', margin: '0 0 6px', lineHeight: 1.4 }}>
+          Pan the map, then click Fetch to save POIs for that area.
+        </p>
+      )}
+
+      <POICheckbox checked={showStarbucks} loading={starbucksLoading} onChange={onShowStarbucksChange} label="Starbucks" badgeClass="sbux-s-badge" />
+      {buildMode && showStarbucks && <button className="fetch-btn" disabled={starbucksLoading} onClick={() => onFetchArea('starbucks')}>Fetch area{statusLabel(fetchStatus.starbucks)}</button>}
+
+      <POICheckbox checked={showCafes} loading={cafesLoading} onChange={onShowCafesChange} label="All coffee shops" badgeClass="cafe-badge" />
+      {buildMode && showCafes && <button className="fetch-btn" disabled={cafesLoading} onClick={() => onFetchArea('cafes')}>Fetch area{statusLabel(fetchStatus.cafes)}</button>}
+
+      <POICheckbox checked={showBakeries} loading={bakeriesLoading} onChange={onShowBakeriesChange} label="Bakeries &amp; patisseries" badgeClass="bakery-badge" />
+      {buildMode && showBakeries && <button className="fetch-btn" disabled={bakeriesLoading} onClick={() => onFetchArea('bakeries')}>Fetch area{statusLabel(fetchStatus.bakeries)}</button>}
 
       <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #ddd' }} />
 
