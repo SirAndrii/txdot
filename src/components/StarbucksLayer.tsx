@@ -8,7 +8,7 @@ import { loadFromCache, saveToCache } from '../utils/starbucksCache';
 let _sessionData: StarbucksLocation[] | null = null;
 
 const STARBUCKS_ICON = L.divIcon({
-  html: '&#9749;',
+  html: '<div class="sbux-s-badge">S</div>',
   className: 'sbux-div-icon',
   iconSize: [24, 24],
   iconAnchor: [12, 12],
@@ -54,7 +54,7 @@ export default function StarbucksLayer({ show, onLoadingChange }: Props) {
           .addTo(map)
           .bindPopup(
             `<div style="font-family:sans-serif;font-size:12px;min-width:180px;">
-              <strong style="font-size:13px;color:#00C637;">&#9749; ${s.name}</strong><br/>
+              <strong style="font-size:13px;color:#00704A;">${s.name}</strong><br/>
               <span style="color:#666;font-size:11px;">${s.address}</span>
             </div>`,
             { maxWidth: 260 },
