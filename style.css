@@ -37,7 +37,7 @@ header span {
 
 #filter-control {
   position: absolute;
-  top: 10px;
+  bottom: 10px;
   left: 10px;
   z-index: 1000;
 }
@@ -69,6 +69,25 @@ header span {
   color: #555;
   font-size: 12px;
   font-weight: 500;
+}
+
+.radio-group {
+  margin-bottom: 8px;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  color: #333;
+  font-size: 12px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.radio-group input[type="radio"] {
+  margin-right: 6px;
+  cursor: pointer;
 }
 
 input[type="range"] {

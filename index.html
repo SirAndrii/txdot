@@ -14,13 +14,21 @@
 </header>
 
 <div id="filter-control" class="control-panel leaflet-control">
+  <b>Data Source</b>
+  <div class="radio-group">
+    <label><input type="radio" name="dataset" value="embedded" checked> Embedded (563)</label>
+    <label><input type="radio" name="dataset" value="v2"> Full TxDOT (2,591)</label>
+  </div>
+  
+  <hr style="margin: 8px 0; border: none; border-top: 1px solid #ddd;">
+  
   <b>Filter by Traffic (AADT)</b>
   <div class="slider-container">
     <label for="minSlider">Minimum:</label>
     <input type="range" id="minSlider" min="0" max="350000" step="5000">
     <div class="slider-values">
       <span id="minValue">0</span>
-      <span id="markerCount">359 stations</span>
+      <span id="markerCount">563 stations</span>
     </div>
   </div>
   <div class="slider-container">
@@ -35,6 +43,7 @@
 <div id="map"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+<script src="./data_v2.js"></script>
 <script src="./map.js"></script>
 </body>
 </html>
