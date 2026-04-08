@@ -46,7 +46,7 @@ export default function CafePanel({
         {' '}Cafes &amp; more
       </label>
 
-      <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #ddd' }} />
+      <hr className="panel-divider" />
 
       <b>Min. reviews</b>
       <div className="slider-container">

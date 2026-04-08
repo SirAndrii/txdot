@@ -18,6 +18,7 @@ function isCoffeeLocation(cats: string[] | undefined): boolean {
 }
 
 export default function App() {
+  const [panelOpen, setPanelOpen] = useState(true);
   const [dataset, setDataset] = useState<Dataset>('embedded');
   const [minFilter, setMinFilter] = useState(4000);
   const [maxFilter, setMaxFilter] = useState(40000);
@@ -67,30 +68,46 @@ export default function App() {
   return (
     <>
       <header>
-        <h1>West Houston Traffic — Cinco Ranch / Katy to Uptown (2024 AADT)</h1>
-        <span>
-          308 stations (≤80,000 AADT) &nbsp;·&nbsp; Harris &amp; Fort Bend Counties &nbsp;·&nbsp;
-          TxDOT data &nbsp;·&nbsp; Hover for details
-        </span>
+        <div className="header-brand">
+          <div className="header-accent" />
+          <h1>West Houston Traffic Map</h1>
+        </div>
+        <div className="header-meta">
+          <span className="header-pill">{filteredStations.length.toLocaleString()} stations visible</span>
+          <div className="header-dot" />
+          <span className="header-pill">Harris &amp; Fort Bend Counties</span>
+          <div className="header-dot" />
+          <span className="header-pill">TxDOT 2024 · Hover for details</span>
+        </div>
       </header>
 
-      <div style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 1000, display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-        <FilterPanel
-          dataset={dataset} onDatasetChange={setDataset}
-          minFilter={minFilter} maxFilter={maxFilter} onMinChange={setMinFilter} onMaxChange={setMaxFilter}
-          showLabels={showLabels} onShowLabelsChange={setShowLabels}
-          showStarbucks={showStarbucks} onShowStarbucksChange={setShowStarbucks} starbucksLoading={starbucksLoading}
-          showBakeries={showBakeries} onShowBakeriesChange={setShowBakeries} bakeriesLoading={bakeriesLoading}
-          buildMode={buildMode} onBuildModeChange={setBuildMode}
-          onFetchArea={handleFetchArea} fetchStatus={fetchStatus}
-          markerCount={filteredStations.length}
-        />
-        <CafePanel
-          showCoffee={showCoffee} onShowCoffeeChange={setShowCoffee}
-          showCafeType={showCafeType} onShowCafeTypeChange={setShowCafeType}
-          minReviews={minReviews} onMinReviewsChange={setMinReviews}
-          locationCount={coffeeLocations.length + cafeLocations.length}
-        />
+      <div className="panel-wrapper">
+        {panelOpen && (
+          <div className="panel-stack">
+            <FilterPanel
+              dataset={dataset} onDatasetChange={setDataset}
+              minFilter={minFilter} maxFilter={maxFilter} onMinChange={setMinFilter} onMaxChange={setMaxFilter}
+              showLabels={showLabels} onShowLabelsChange={setShowLabels}
+              showStarbucks={showStarbucks} onShowStarbucksChange={setShowStarbucks} starbucksLoading={starbucksLoading}
+              showBakeries={showBakeries} onShowBakeriesChange={setShowBakeries} bakeriesLoading={bakeriesLoading}
+              buildMode={buildMode} onBuildModeChange={setBuildMode}
+              onFetchArea={handleFetchArea} fetchStatus={fetchStatus}
+              markerCount={filteredStations.length}
+            />
+            <CafePanel
+              showCoffee={showCoffee} onShowCoffeeChange={setShowCoffee}
+              showCafeType={showCafeType} onShowCafeTypeChange={setShowCafeType}
+              minReviews={minReviews} onMinReviewsChange={setMinReviews}
+              locationCount={coffeeLocations.length + cafeLocations.length}
+            />
+          </div>
+        )}
+        <button
+          className={`panel-toggle-btn${panelOpen ? '' : ' collapsed'}`}
+          onClick={() => setPanelOpen(p => !p)}
+        >
+          {panelOpen ? '↙ Hide panel' : '☰ Show filters'}
+        </button>
       </div>
 
       <MapView

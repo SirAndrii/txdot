@@ -125,36 +125,20 @@ export default function FilterPanel({
         </label>
       </div>
 
-      <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #ddd' }} />
-
-      <label>
-        <input
-          type="checkbox"
-          checked={showLabels}
-          onChange={e => onShowLabelsChange(e.target.checked)}
-        />
-        {' '}Show traffic numbers
-      </label>
-
-      <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #ddd' }} />
+      <hr className="panel-divider" />
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
         <b style={{ marginBottom: 0 }}>Points of Interest</b>
         <button
           onClick={() => onBuildModeChange(!buildMode)}
-          style={{
-            fontSize: 11, padding: '2px 7px', borderRadius: 4, cursor: 'pointer',
-            border: buildMode ? '1px solid #00704A' : '1px solid #bbb',
-            background: buildMode ? '#e8f5e9' : '#f5f5f5',
-            color: buildMode ? '#00704A' : '#333', fontWeight: buildMode ? 600 : 400,
-          }}
+          className={`build-mode-btn${buildMode ? ' active' : ''}`}
         >
           {buildMode ? '🗺 Building…' : '🗺 Build map'}
         </button>
       </div>
 
       {buildMode && (
-        <p style={{ fontSize: 11, color: '#888', margin: '0 0 6px', lineHeight: 1.4 }}>
+        <p className="build-mode-hint">
           Pan the map, then click Fetch to save POIs for that area.
         </p>
       )}
@@ -165,11 +149,21 @@ export default function FilterPanel({
       <POICheckbox checked={showBakeries} loading={bakeriesLoading} onChange={onShowBakeriesChange} label="Bakeries &amp; patisseries" badgeClass="bakery-badge" />
       {buildMode && showBakeries && <button className="fetch-btn" disabled={bakeriesLoading} onClick={() => onFetchArea('bakeries')}>Fetch area{statusLabel(fetchStatus.bakeries)}</button>}
 
-      <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #ddd' }} />
+      <hr className="panel-divider" />
 
-      <b>Filter by Traffic (AADT)</b>
+      <div className="aadt-header">
+        <b>Traffic Filter (AADT)</b>
+        <label className="labels-toggle">
+          <input
+            type="checkbox"
+            checked={showLabels}
+            onChange={e => onShowLabelsChange(e.target.checked)}
+          />
+          {' '}Labels
+        </label>
+      </div>
       <div className="slider-container">
-        <label htmlFor="minSlider">Minimum:</label>
+        <label htmlFor="minSlider">Min</label>
         <input
           id="minSlider"
           type="range"
@@ -179,14 +173,9 @@ export default function FilterPanel({
           value={minFilter}
           onChange={handleMinSlider}
         />
-        <div className="slider-values">
-          <span>{fmt(minFilter)}</span>
-          <span>{markerCount} station{markerCount !== 1 ? 's' : ''}</span>
-        </div>
       </div>
-
-      <div className="slider-container">
-        <label htmlFor="maxSlider">Maximum:</label>
+      <div className="slider-container" style={{ marginBottom: 4 }}>
+        <label htmlFor="maxSlider">Max</label>
         <input
           id="maxSlider"
           type="range"
@@ -196,9 +185,10 @@ export default function FilterPanel({
           value={maxFilter}
           onChange={handleMaxSlider}
         />
-        <div className="slider-values">
-          <span>{fmt(maxFilter)}</span>
-        </div>
+      </div>
+      <div className="range-display">
+        <span>{fmt(minFilter)} – {fmt(maxFilter)}</span>
+        <span>{markerCount} station{markerCount !== 1 ? 's' : ''}</span>
       </div>
     </div>
   );
