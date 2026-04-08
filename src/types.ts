@@ -12,6 +12,12 @@ export interface StarbucksLocation {
   lon: number;
   name: string;
   address: string;
+  phone?: string;
+  website?: string;
+  rating?: number;
+  reviews?: number;
+  categories?: string[];
+  googleUrl?: string;
 }
 
 export type Dataset = 'embedded' | 'v2';

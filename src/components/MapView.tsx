@@ -8,8 +8,9 @@ import {
   useMap,
 } from 'react-leaflet';
 import L from 'leaflet';
-import type { Station } from '../types';
+import type { Station, StarbucksLocation } from '../types';
 import StarbucksLayer from './StarbucksLayer';
+import StaticPoiLayer from './StaticPoiLayer';
 
 // Fix default Leaflet icon paths broken by bundlers
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
@@ -127,12 +128,12 @@ interface MapViewProps {
   showLabels: boolean;
   showStarbucks: boolean;
   onStarbucksLoadingChange: (loading: boolean) => void;
-  showCafes: boolean;
-  onCafesLoadingChange: (loading: boolean) => void;
   showBakeries: boolean;
   onBakeriesLoadingChange: (loading: boolean) => void;
   fetchKeys: Record<string, number>;
   onFetchResult: (mode: string, added: number) => void;
+  coffeeLocations: StarbucksLocation[];
+  cafeLocations: StarbucksLocation[];
 }
 
 export default function MapView({
@@ -140,12 +141,12 @@ export default function MapView({
   showLabels,
   showStarbucks,
   onStarbucksLoadingChange,
-  showCafes,
-  onCafesLoadingChange,
   showBakeries,
   onBakeriesLoadingChange,
   fetchKeys,
   onFetchResult,
+  coffeeLocations,
+  cafeLocations,
 }: MapViewProps) {
   return (
     <MapContainer
@@ -164,8 +165,9 @@ export default function MapView({
 
       <TrafficLayer stations={stations} showLabels={showLabels} />
       <StarbucksLayer mode="starbucks" show={showStarbucks} onLoadingChange={onStarbucksLoadingChange} fetchKey={fetchKeys.starbucks} onFetchResult={n => onFetchResult('starbucks', n)} />
-      <StarbucksLayer mode="cafes"     show={showCafes}     onLoadingChange={onCafesLoadingChange}    fetchKey={fetchKeys.cafes}     onFetchResult={n => onFetchResult('cafes', n)} />
       <StarbucksLayer mode="bakeries"  show={showBakeries}  onLoadingChange={onBakeriesLoadingChange} fetchKey={fetchKeys.bakeries}  onFetchResult={n => onFetchResult('bakeries', n)} />
+      <StaticPoiLayer locations={coffeeLocations} badgeClass="cafe-badge"       badgeLetter="C"  popupColor="#795548" />
+      <StaticPoiLayer locations={cafeLocations}   badgeClass="cafe-other-badge" badgeLetter="Ca" popupColor="#5C6BC0" />
       <LegendControl />
     </MapContainer>
   );

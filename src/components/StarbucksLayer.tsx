@@ -61,7 +61,7 @@ const ICONS: Record<CafeMode, L.DivIcon> = {
 
 const QUERIES: Record<CafeMode, string> = {
   starbucks: '(node["name"~"Starbucks",i];way["name"~"Starbucks",i];);',
-  cafes:     '(node["amenity"="cafe"];way["amenity"="cafe"];);',
+  cafes:     '(node["name"~"espresso",i];way["name"~"espresso",i];);',
   bakeries:  '(node["shop"="bakery"];way["shop"="bakery"];);',
 };
 
@@ -101,6 +101,19 @@ function gridBboxes(b: L.LatLngBounds, n: number): string[] {
     }
   }
   return cells;
+}
+
+function makePopupHtml(s: StarbucksLocation, color: string): string {
+  const stars = s.rating ? `${'★'.repeat(Math.round(s.rating))}${'☆'.repeat(5 - Math.round(s.rating))} ${s.rating.toFixed(1)}${s.reviews ? ` (${s.reviews.toLocaleString()})` : ''}` : '';
+  const phone   = s.phone   ? `<br/><a href="tel:${s.phone}" style="color:#2563eb;font-size:11px;">${s.phone}</a>` : '';
+  const website = s.website ? `<br/><a href="${s.website}" target="_blank" rel="noopener" style="color:#2563eb;font-size:11px;">Website</a>` : '';
+  const gmaps   = s.googleUrl ? ` · <a href="${s.googleUrl}" target="_blank" rel="noopener" style="color:#2563eb;font-size:11px;">Google Maps</a>` : '';
+  return `<div style="font-family:sans-serif;font-size:12px;min-width:180px;">
+    <strong style="font-size:13px;color:${color};">${s.name}</strong><br/>
+    <span style="color:#666;font-size:11px;">${s.address}</span>
+    ${stars ? `<br/><span style="font-size:11px;color:#f5a623;">${stars}</span>` : ''}
+    ${phone}${website}${gmaps}
+  </div>`;
 }
 
 function parseElements(elements: OverpassElement[], defaultName: string): StarbucksLocation[] {
@@ -153,12 +166,7 @@ export default function StarbucksLayer({ mode, show, onLoadingChange, fetchKey =
       data.forEach(s => {
         const m = L.marker([s.lat, s.lon], { icon })
           .addTo(map)
-          .bindPopup(
-            `<div style="font-family:sans-serif;font-size:12px;min-width:180px;">
-              <strong style="font-size:13px;color:${popupColor};">${s.name}</strong><br/>
-              <span style="color:#666;font-size:11px;">${s.address}</span>
-            </div>`,
-            { maxWidth: 260 },
+          .bindPopup(makePopupHtml(s, popupColor), { maxWidth: 280 },
           );
         markersRef.current.push(m);
       });
@@ -280,13 +288,7 @@ export default function StarbucksLayer({ mode, show, onLoadingChange, fetchKey =
         merged.forEach((s: StarbucksLocation) => {
           const m = L.marker([s.lat, s.lon], { icon })
             .addTo(map)
-            .bindPopup(
-              `<div style="font-family:sans-serif;font-size:12px;min-width:180px;">
-                <strong style="font-size:13px;color:${popupColor};">${s.name}</strong><br/>
-                <span style="color:#666;font-size:11px;">${s.address}</span>
-              </div>`,
-              { maxWidth: 260 },
-            );
+            .bindPopup(makePopupHtml(s, popupColor), { maxWidth: 280 });
           markersRef.current.push(m);
         });
         onFetchResult?.(added);

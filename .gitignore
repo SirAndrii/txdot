@@ -1,2 +1,5 @@
 node_modules/
 dist/
+
+# Contains API tokens — do not commit
+.vscode/mcp.json

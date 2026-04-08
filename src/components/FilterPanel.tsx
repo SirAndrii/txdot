@@ -14,9 +14,6 @@ interface Props {
   showStarbucks: boolean;
   onShowStarbucksChange: (v: boolean) => void;
   starbucksLoading: boolean;
-  showCafes: boolean;
-  onShowCafesChange: (v: boolean) => void;
-  cafesLoading: boolean;
   showBakeries: boolean;
   onShowBakeriesChange: (v: boolean) => void;
   bakeriesLoading: boolean;
@@ -80,9 +77,6 @@ export default function FilterPanel({
   showStarbucks,
   onShowStarbucksChange,
   starbucksLoading,
-  showCafes,
-  onShowCafesChange,
-  cafesLoading,
   showBakeries,
   onShowBakeriesChange,
   bakeriesLoading,
@@ -167,9 +161,6 @@ export default function FilterPanel({
 
       <POICheckbox checked={showStarbucks} loading={starbucksLoading} onChange={onShowStarbucksChange} label="Starbucks" badgeClass="sbux-s-badge" />
       {buildMode && showStarbucks && <button className="fetch-btn" disabled={starbucksLoading} onClick={() => onFetchArea('starbucks')}>Fetch area{statusLabel(fetchStatus.starbucks)}</button>}
-
-      <POICheckbox checked={showCafes} loading={cafesLoading} onChange={onShowCafesChange} label="All coffee shops" badgeClass="cafe-badge" />
-      {buildMode && showCafes && <button className="fetch-btn" disabled={cafesLoading} onClick={() => onFetchArea('cafes')}>Fetch area{statusLabel(fetchStatus.cafes)}</button>}
 
       <POICheckbox checked={showBakeries} loading={bakeriesLoading} onChange={onShowBakeriesChange} label="Bakeries &amp; patisseries" badgeClass="bakery-badge" />
       {buildMode && showBakeries && <button className="fetch-btn" disabled={bakeriesLoading} onClick={() => onFetchArea('bakeries')}>Fetch area{statusLabel(fetchStatus.bakeries)}</button>}
