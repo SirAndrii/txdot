@@ -1,41 +1,36 @@
 import { useState, useMemo, useCallback } from 'react';
+import type { Dataset, Station, StarbucksLocation } from './types';
+import type { CafeMode } from './utils/starbucksCache';
+import type { NeighborhoodLayerProps } from './components/NeighborhoodLayer';
+import espressoData from './data/espresso';
+import embeddedData from '../data.json';
+import v2Data from '../data_v2.json';
 import MapView from './components/MapView';
 import FilterPanel from './components/FilterPanel';
 import CafePanel from './components/CafePanel';
-import type { Dataset, Station } from './types';
-import espressoData from './data/espresso';
-
-import embeddedData from '../data.json';
-import v2Data from '../data_v2.json';
+import NeighborhoodPanel from './components/NeighborhoodPanel';
 
 const embedded = embeddedData as Station[];
-const v2 = v2Data as Station[];
+const v2       = v2Data      as Station[];
 
-type CafeMode = 'starbucks' | 'cafes' | 'bakeries';
-
-function isCoffeeLocation(cats: string[] | undefined): boolean {
+function isCoffeeLocation(cats: string[] | undefined) {
   return (cats ?? []).some(c => /coffee|espresso/i.test(c));
+}
+
+function toggleSet(prev: ReadonlySet<number>, idx: number): Set<number> {
+  const next = new Set(prev);
+  next.has(idx) ? next.delete(idx) : next.add(idx);
+  return next;
 }
 
 export default function App() {
   const [panelOpen, setPanelOpen] = useState(true);
-  const [dataset, setDataset] = useState<Dataset>('embedded');
-  const [minFilter, setMinFilter] = useState(4000);
-  const [maxFilter, setMaxFilter] = useState(40000);
+
+  // ── Traffic ────────────────────────────────────────────────────────────────
+  const [dataset,    setDataset]    = useState<Dataset>('embedded');
+  const [minFilter,  setMinFilter]  = useState(4_000);
+  const [maxFilter,  setMaxFilter]  = useState(40_000);
   const [showLabels, setShowLabels] = useState(false);
-  const [showStarbucks, setShowStarbucks] = useState(false);
-  const [starbucksLoading, setStarbucksLoading] = useState(false);
-  const [showBakeries, setShowBakeries] = useState(false);
-  const [bakeriesLoading, setBakeriesLoading] = useState(false);
-
-  const [buildMode, setBuildMode] = useState(false);
-  const [fetchKeys, setFetchKeys] = useState<Record<CafeMode, number>>({ starbucks: 0, cafes: 0, bakeries: 0 });
-  const [fetchStatus, setFetchStatus] = useState<Record<CafeMode, number | null>>({ starbucks: null, cafes: null, bakeries: null });
-
-  // Cafe panel state
-  const [showCoffee, setShowCoffee] = useState(false);
-  const [showCafeType, setShowCafeType] = useState(false);
-  const [minReviews, setMinReviews] = useState(0);
 
   const allStations = dataset === 'embedded' ? embedded : v2;
   const filteredStations = useMemo(
@@ -43,27 +38,57 @@ export default function App() {
     [allStations, minFilter, maxFilter],
   );
 
-  const coffeeLocations = useMemo(() => {
+  // ── POI ────────────────────────────────────────────────────────────────────
+  const [showStarbucks,    setShowStarbucks]    = useState(false);
+  const [starbucksLoading, setStarbucksLoading] = useState(false);
+  const [showBakeries,     setShowBakeries]     = useState(false);
+  const [bakeriesLoading,  setBakeriesLoading]  = useState(false);
+  const [buildMode,        setBuildMode]        = useState(false);
+  const [fetchKeys,   setFetchKeys]   = useState<Record<CafeMode, number>>({ starbucks: 0, cafes: 0, bakeries: 0 });
+  const [fetchStatus, setFetchStatus] = useState<Record<CafeMode, number | null>>({ starbucks: null, cafes: null, bakeries: null });
+
+  const fetchArea = useCallback((mode: CafeMode) => {
+    setFetchStatus(prev => ({ ...prev, [mode]: null }));
+    setFetchKeys(prev  => ({ ...prev, [mode]: prev[mode] + 1 }));
+  }, []);
+
+  const reportFetchResult = useCallback((mode: string, added: number) => {
+    setFetchStatus(prev => ({ ...prev, [mode]: added }));
+  }, []);
+
+  // ── Cafe explorer ──────────────────────────────────────────────────────────
+  const [showCoffee,   setShowCoffee]   = useState(false);
+  const [showCafeType, setShowCafeType] = useState(false);
+  const [minReviews,   setMinReviews]   = useState(0);
+
+  const coffeeLocations = useMemo<StarbucksLocation[]>(() => {
     if (!showCoffee) return [];
     return espressoData.filter(loc => isCoffeeLocation(loc.categories) && (loc.reviews ?? 0) >= minReviews);
   }, [showCoffee, minReviews]);
 
-  const cafeLocations = useMemo(() => {
+  const cafeLocations = useMemo<StarbucksLocation[]>(() => {
     if (!showCafeType) return [];
     return espressoData.filter(loc => !isCoffeeLocation(loc.categories) && (loc.reviews ?? 0) >= minReviews);
   }, [showCafeType, minReviews]);
 
-  const handleStarbucksLoadingChange = useCallback((loading: boolean) => { setStarbucksLoading(loading); }, []);
-  const handleBakeriesLoadingChange  = useCallback((loading: boolean) => { setBakeriesLoading(loading); }, []);
+  // ── Census tracts ──────────────────────────────────────────────────────────
+  const [showCensus,    setShowCensus]    = useState(false);
+  const [censusLoading, setCensusLoading] = useState(false);
+  const [showIncome,    setShowIncome]    = useState(true);
+  const [showDensity,   setShowDensity]   = useState(false);
+  const [hiddenIncomeBuckets,  setHiddenIncomeBuckets]  = useState<ReadonlySet<number>>(new Set());
+  const [hiddenDensityBuckets, setHiddenDensityBuckets] = useState<ReadonlySet<number>>(new Set());
+  const [andMode, setAndMode] = useState(false);
 
-  const handleFetchArea = useCallback((mode: CafeMode) => {
-    setFetchStatus(prev => ({ ...prev, [mode]: null }));
-    setFetchKeys(prev => ({ ...prev, [mode]: prev[mode] + 1 }));
-  }, []);
+  const toggleIncomeBucket  = useCallback((idx: number) => setHiddenIncomeBuckets(prev  => toggleSet(prev, idx)), []);
+  const toggleDensityBucket = useCallback((idx: number) => setHiddenDensityBuckets(prev => toggleSet(prev, idx)), []);
 
-  const handleFetchResult = useCallback((mode: string, added: number) => {
-    setFetchStatus(prev => ({ ...prev, [mode]: added }));
-  }, []);
+  const censusProps: NeighborhoodLayerProps = {
+    show: showCensus, showIncome, showDensity,
+    hiddenIncomeBuckets, hiddenDensityBuckets,
+    andMode,
+    onLoadingChange: setCensusLoading,
+  };
 
   return (
     <>
@@ -86,19 +111,28 @@ export default function App() {
           <div className="panel-stack">
             <FilterPanel
               dataset={dataset} onDatasetChange={setDataset}
-              minFilter={minFilter} maxFilter={maxFilter} onMinChange={setMinFilter} onMaxChange={setMaxFilter}
+              minFilter={minFilter} onMinChange={setMinFilter}
+              maxFilter={maxFilter} onMaxChange={setMaxFilter}
               showLabels={showLabels} onShowLabelsChange={setShowLabels}
               showStarbucks={showStarbucks} onShowStarbucksChange={setShowStarbucks} starbucksLoading={starbucksLoading}
               showBakeries={showBakeries} onShowBakeriesChange={setShowBakeries} bakeriesLoading={bakeriesLoading}
               buildMode={buildMode} onBuildModeChange={setBuildMode}
-              onFetchArea={handleFetchArea} fetchStatus={fetchStatus}
-              markerCount={filteredStations.length}
+              fetchStatus={fetchStatus} onFetchArea={fetchArea}
+              stationCount={filteredStations.length}
             />
             <CafePanel
               showCoffee={showCoffee} onShowCoffeeChange={setShowCoffee}
               showCafeType={showCafeType} onShowCafeTypeChange={setShowCafeType}
               minReviews={minReviews} onMinReviewsChange={setMinReviews}
               locationCount={coffeeLocations.length + cafeLocations.length}
+            />
+            <NeighborhoodPanel
+              show={showCensus} onShowChange={setShowCensus} loading={censusLoading}
+              showIncome={showIncome} onShowIncomeChange={setShowIncome}
+              hiddenIncomeBuckets={hiddenIncomeBuckets} onToggleIncomeBucket={toggleIncomeBucket}
+              showDensity={showDensity} onShowDensityChange={setShowDensity}
+              hiddenDensityBuckets={hiddenDensityBuckets} onToggleDensityBucket={toggleDensityBucket}
+              andMode={andMode} onAndModeChange={setAndMode}
             />
           </div>
         )}
@@ -112,11 +146,11 @@ export default function App() {
 
       <MapView
         stations={filteredStations} showLabels={showLabels}
-        showStarbucks={showStarbucks} onStarbucksLoadingChange={handleStarbucksLoadingChange}
-        showBakeries={showBakeries} onBakeriesLoadingChange={handleBakeriesLoadingChange}
-        fetchKeys={fetchKeys} onFetchResult={handleFetchResult}
-        coffeeLocations={coffeeLocations}
-        cafeLocations={cafeLocations}
+        showStarbucks={showStarbucks} onStarbucksLoadingChange={setStarbucksLoading}
+        showBakeries={showBakeries} onBakeriesLoadingChange={setBakeriesLoading}
+        fetchKeys={fetchKeys} onFetchResult={reportFetchResult}
+        coffeeLocations={coffeeLocations} cafeLocations={cafeLocations}
+        census={censusProps}
       />
     </>
   );

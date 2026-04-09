@@ -491,6 +491,92 @@ input[type='range']::-moz-range-thumb {
   font-variant-numeric: tabular-nums;
 }
 
+/* ── Neighborhood panel ──────────────────────────────────────────────────── */
+.nbhd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.nbhd-header b {
+  margin-bottom: 0;
+}
+
+.nbhd-hint {
+  font-size: 10px;
+  color: #94a3b8;
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+
+.nbhd-group {
+  margin-bottom: 8px;
+}
+
+.nbhd-group-header {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+.nbhd-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-left: 4px;
+}
+
+/* Each legend row is a button for click-to-filter */
+.nbhd-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #374151;
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  margin-left: -4px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 120ms ease;
+  font-family: inherit;
+}
+
+.nbhd-legend-row:hover {
+  background: #f1f5f9;
+}
+
+.nbhd-legend-row.nbhd-hidden {
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.nbhd-legend-label {
+  flex: 1;
+}
+
+.nbhd-hidden-icon {
+  font-size: 9px;
+  color: #cbd5e1;
+}
+
+.nbhd-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 /* ── Animations ──────────────────────────────────────────────────────────── */
 @keyframes spin {
   from { transform: rotate(0deg); }
