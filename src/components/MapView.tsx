@@ -32,6 +32,14 @@ function getRadius(aadt: number) {
   return 4;
 }
 
+// Precomputed per js-cache-function-results: avoid allocating a new object per
+// marker per render. Keys match the 3 possible getColor() return values.
+const PATH_OPTIONS: Record<string, L.PathOptions> = {
+  '#1D9E75': { fillColor: '#1D9E75', color: '#fff', weight: 1.5, opacity: 1, fillOpacity: 0.88 },
+  '#EFC427': { fillColor: '#EFC427', color: '#fff', weight: 1.5, opacity: 1, fillOpacity: 0.88 },
+  '#E24B4A': { fillColor: '#E24B4A', color: '#fff', weight: 1.5, opacity: 1, fillOpacity: 0.88 },
+};
+
 class LegendCtrl extends L.Control {
   onAdd(): HTMLElement {
     const div = L.DomUtil.create('div', 'legend');
@@ -62,8 +70,9 @@ function TrafficLayer({ stations, showLabels }: { stations: Station[]; showLabel
         const color = getColor(s.aadt);
         const road  = s.road === '-' ? 'Unnamed road' : s.road;
         return (
-          <CircleMarker key={`${s.station}-${showLabels}`} center={[s.lat, s.lon]} radius={getRadius(s.aadt)}
-            pathOptions={{ fillColor: color, color: '#fff', weight: 1.5, opacity: 1, fillOpacity: 0.88 }}>
+          // key must not include showLabels: changing it would unmount/remount all markers
+          <CircleMarker key={s.station} center={[s.lat, s.lon]} radius={getRadius(s.aadt)}
+            pathOptions={PATH_OPTIONS[color]}>
             <Tooltip permanent={showLabels} sticky={!showLabels}
               direction={showLabels ? 'bottom' : 'top'} offset={showLabels ? [0, 8] : [0, 0]}
               className={showLabels ? 'traffic-label' : undefined} opacity={0.97}>
